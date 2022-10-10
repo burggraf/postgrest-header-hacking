@@ -81,14 +81,15 @@ You could extend this by creating a table of IP addresses and check against that
 
 ### Using the Results in a PostgreSQL Trigger
 
-CREATE OR REPLACE FUNCTION test()
+CREATE TABLE IF NOT EXISTS log_table (id serial primary key, table_name text, key text, created_at timestamptz DEFAULT now(), user_agent text, host text, origin text, referer text, ip text);
+
+CREATE OR REPLACE FUNCTION log_user_data()
   RETURNS trigger AS
 $$
 BEGIN
-         INSERT INTO test_table(col1,col2,col3)
-         VALUES(NEW.col1,NEW.col2,current_date);
- 
-    RETURN NEW;
+  INSERT INTO log_table(table_name, key, user_agent, host, origin, referer, ip)
+  VALUES(TG_TABLE_NAME::regclass::text, NEW.id::text, get_header('user-agent'), get_header('host'), get_header('origin'), get_header('referer'), SPLIT_PART(get_header('x-forwarded-for') || ',', ',', 1));
+  RETURN NEW;
 END;
 $$
 LANGUAGE 'plpgsql';
@@ -97,7 +98,7 @@ CREATE TRIGGER test_trigger
   AFTER INSERT
   ON test_table
   FOR EACH ROW
-  EXECUTE PROCEDURE test();
+  EXECUTE PROCEDURE log_user_data();
   
 ### Other Interesting Tidbits from the User-Agent
 We can parse the `user-agent` header to get relevant information, such as:
@@ -119,4 +120,4 @@ You may find additional headers beyond the ones listed here available to you whe
 2. may change or go away completely based on infrastructure changes or changes to PostgREST or the Supabase Client Libraries.
 
 ### Conclusion
-
+PostgREST exposes some really useful request headers that give PostgreSQL functions the power to do some things that previously required a separate middleware tier.  Moving this functionality into the database eliminates the need for that extra tier and might also speed up your application by reducing extra network round-trips.  It also allows you to add an extra security layer at the database level, so you can allow or restrict access based on IP address, host name, client type, Javascript client version, and more!
