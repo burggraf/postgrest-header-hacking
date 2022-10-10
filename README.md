@@ -113,10 +113,13 @@ We can parse the `user-agent` header to get relevant information, such as:
 
 Is the user running on a Windows platform:
 `get_header('user-agent') LIKE '%Windows%'`
+
 Or Mac:
 `get_header('user-agent') LIKE '%Mac OS X%'`
+
 Is the user on a Mobile device:
 `get_header('user-agent') LIKE 'Mobile/%'`
+
 Check iOS Major Version:
 `get_header('user-agent') LIKE '%iPhone OS 16%'`
 
