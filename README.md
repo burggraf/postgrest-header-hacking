@@ -98,3 +98,18 @@ CREATE TRIGGER test_trigger
   ON test_table
   FOR EACH ROW
   EXECUTE PROCEDURE test();
+  
+### Other Interesting Tidbits from the User-Agent
+We can parse the `user-agent` header to get relevant information, such as:
+
+Is the user running on a Windows platform:
+`get_header('user-agent') LIKE '%Windows%'`
+Or Mac:
+`get_header('user-agent') LIKE '%Mac OS X%'`
+Is the user on a Mobile device:
+`get_header('user-agent') LIKE 'Mobile/%'`
+Check iOS Major Version:
+`get_header('user-agent') LIKE '%iPhone OS 16%'`
+
+The `user-agent` isn't the most accurate way to get this information, though, and `user-agent`s are always subject to change (and can be forged) so be careful with this.
+
