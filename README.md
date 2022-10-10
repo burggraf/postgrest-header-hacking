@@ -48,7 +48,7 @@ If we want to get the data from a specific header, we can create this function:
 CREATE OR REPLACE FUNCTION get_header(item text) RETURNS text
     LANGUAGE sql STABLE
     AS $$
-    SELECT (current_setting('request.headers', true)::json)->item
+    SELECT (current_setting('request.headers', true)::json)->>item
 $$;
 ```
 
@@ -80,7 +80,9 @@ WITH CHECK (SPLIT_PART(get_header('x-forwarded-for') || ',', ',', 1) = ANY (ARRA
 You could extend this by creating a table of IP addresses and check against that table (`(SELECT count(*) from my_whitelist_table where ip = SPLIT_PART(get_header('x-forwarded-for') || ',', ',', 1)) > 0`), but be careful, this adds an extra lookup to another table, and this slows down your RLS policy considerably and could lead to scaling problems down the road.
 
 ### Using the Results in a PostgreSQL Trigger
+Let's create a log table caled `log_table`, and then for every record inserted into our `test_table`, we'll log a record there with the user's `user_agent`, `host`, `origin`, `referer`, and `ip`:
 
+```sql
 CREATE TABLE IF NOT EXISTS log_table (id serial primary key, table_name text, key text, created_at timestamptz DEFAULT now(), user_agent text, host text, origin text, referer text, ip text);
 
 CREATE OR REPLACE FUNCTION log_user_data()
@@ -99,7 +101,13 @@ CREATE TRIGGER test_trigger
   ON test_table
   FOR EACH ROW
   EXECUTE PROCEDURE log_user_data();
-  
+```
+
+Things of note here:  
+- `TG_TABLE_NAME::regclass::text` returns the current table name in our trigger (so we can re-use this trigger on other tables!)
+- `NEW.id::text` converts the `id` field of the current table to text (a string).  I use a `UUID` as the `id` field for almost every table I create, so this should work just fine.  If you use a different convention or primary key type, you may have to alter this.
+- `SPLIT_PART(get_header('x-forwarded-for') || ',', ',', 1)`, as mentioned earlier, grabs the first `ip` found in the `x-forwarded-for` header.
+
 ### Other Interesting Tidbits from the User-Agent
 We can parse the `user-agent` header to get relevant information, such as:
 
