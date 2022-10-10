@@ -5,6 +5,7 @@ What does your database know about your users?  If you're using the Supabase Jav
 
 Luke Bechtel from [Revaly](https://revaly.com) recently asked "is there any way to get things like **Client IP Address** or **Browser Type** from inside a PostgreSQL trigger or RLS (Row Level Security) Policy?"  Well, since the Supabase client uses PostgREST, and PostgREST is a web tool, then it should have full access to the server's request object.  And indeed, it does.
 
+## Interesting Use Cases
 Why is this useful or important?  Imagine these use cases:
 
 - Whitelisting IPs: only allow users to select, insert, update, or delete if they're coming from a pre-defined list of IP addresses.
@@ -15,6 +16,7 @@ Why is this useful or important?  Imagine these use cases:
 
 Of course, if the user is logged into our app, this is already in addition to the users email address and user id, which we already have access to via `auth.email()` and `auth.uid()`.
 
+## Getting Access to the Request Headers
 How can we get access to all this useful information?  By using the PostgreSQL `current_setting` function, we can access the `request.headers` liks this: `current_setting('request.headers', true)`.  So, to put that into a useful function, we get:
 
 ```sql
@@ -52,4 +54,7 @@ $$;
 
 This allows us to get the text value for any specified header, such as: `get_header('user-agent')`.
 
+## Using the Results in a RLS (Row Level Security) Policy
+
+CREATE POLICY "public can insert device_log records" ON public.device_log FOR INSERT WITH CHECK (true);
 
