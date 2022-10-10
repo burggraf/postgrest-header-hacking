@@ -113,3 +113,10 @@ Check iOS Major Version:
 
 The `user-agent` isn't the most accurate way to get this information, though, and `user-agent`s are always subject to change (and can be forged) so be careful with this.
 
+### Other Caveats and Warnings
+You may find additional headers beyond the ones listed here available to you when testing this, but it's best not to rely on them, as they:
+1. may not be available on every platform or device (some headers exist on desktop systems but not mobile systems, for instance)
+2. may change or go away completely based on infrastructure changes or changes to PostgREST or the Supabase Client Libraries.
+
+### Conclusion
+
