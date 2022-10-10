@@ -1,9 +1,7 @@
 # Hacking the PostgREST Headers: Oh, the Things You Can Do!
 When using the Supabase Javascript Client, reading the PostgREST headers gives us all sorts of useful information for logging and security purposes.
 
-What does your database know about your users?  If you're using the Supabase Javascript Client (which wraps PostgREST), then, well, plenty!  
-
-Luke Bechtel from [Revaly](https://revaly.com) recently asked "is there any way to get things like **Client IP Address** or **Browser Type** from inside a PostgreSQL trigger or RLS (Row Level Security) Policy?"  Well, since the Supabase client uses PostgREST, and PostgREST is a web tool, then it should have full access to the server's request object.  And indeed, it does.
+Luke Bechtel from [Revaly](https://revaly.com) recently asked "is there any way to get things like **Browser Type** or **Host Name** from inside a PostgreSQL trigger or RLS (Row Level Security) Policy?"  Well, since the Supabase client uses PostgREST, and PostgREST is a web tool, then it should be able to access to the server's request object.  And indeed, it does.
 
 ### Interesting Use Cases
 Why is this useful or important?  Imagine these use cases:
