@@ -65,8 +65,19 @@ FOR INSERT
 WITH CHECK (get_header('host')='localhost:3000');
 ```
 
-For security purposes, we can restict the usage for a table based on a whitelisted set of IPs.
+For security purposes, we can restict the usage for a table based on a whitelisted set of IPs.  First, we need to get the user's IP address, which is found in `x-forwarded-for`, but that has 2 IP addresses separated by commas, and we only want the first one.  So we can use the PostgreSQL `SPLIT_PART` function, which is similar to the Javascript `split` function: `SPLIT_PART(get_header('x-forwarded-for') || ',', ',', 1)`.  Note how we concatenate a comma to the `x-forwarded-for` header (`get_header('x-forwarded-for') || ','`), just in case there's an empty string there?
 
+Now that we have the user's IP address, we can test to see if it's in our whitelist set:
+
+```sql
+CREATE POLICY "only allow access to table_for_internal_use_only from a set of IPs" ON "public"."table_for_internal_use_only"
+AS PERMISSIVE FOR ALL
+TO public
+USING (SPLIT_PART(get_header('x-forwarded-for') || ',', ',', 1) = ANY (ARRAY['123.44.152.151','203.44.11.22','11.4.102.33']))
+WITH CHECK (SPLIT_PART(get_header('x-forwarded-for') || ',', ',', 1) = ANY (ARRAY['123.44.152.151','203.44.11.22','11.4.102.33']));
+```
+
+You could extend this by creating a table of IP addresses and check against that table (`(SELECT count(*) from my_whitelist_table where ip = SPLIT_PART(get_header('x-forwarded-for') || ',', ',', 1)) > 0`), but be careful, this adds an extra lookup to another table, and this slows down your RLS policy considerably and could lead to scaling problems down the road.
 
 ### Using the Results in a PostgreSQL Trigger
 
