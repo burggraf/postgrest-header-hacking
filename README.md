@@ -12,7 +12,7 @@ Why is this useful or important?  Imagine these use cases:
 - Logging: Log the user's IP address and browser User Agent in your database with their anonymous request data.
 - Version Requirements: only allow clients coming from the most recent version of the Supabase Javascript Client Library.
 
-Of course, if the user is logged into our app, this is already in addition to the users email address and user id, which we already have access to via `auth.email()` and `auth.uid()`.
+Of course, if the user is logged into our app, we can also get their id using `auth.uid()`, or their [email](https://supabase.com/docs/guides/auth/row-level-security#authemail) using `auth.jwt() ->> 'email'`.
 
 ### Getting Access to the Request Headers
 How can we get access to all this useful information?  By using the PostgreSQL `current_setting` function, we can access the `request.headers` liks this: `current_setting('request.headers', true)`.  So, to put that into a useful function, we get:
