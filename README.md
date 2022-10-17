@@ -4,7 +4,7 @@ When using the Supabase Javascript Client, reading the PostgREST headers gives u
 Luke Bechtel from [Revaly](https://revaly.com) recently asked "is there any way to get things like **Browser Type** or **Host Name** from inside a PostgreSQL trigger or RLS (Row Level Security) Policy?"  Well, since the Supabase client uses PostgREST, and PostgREST is a web tool, then it should be able to access to the server's request object.  And indeed, it does.
 
 ### Examples
-See [pghdrkit](https://github.com/burggraf/pghdrkit)
+See [pghdrkit: PostgREST Header Kit](https://github.com/burggraf/pghdrkit)
 
 ### Interesting Use Cases
 Why is this useful or important?  Imagine these use cases:
