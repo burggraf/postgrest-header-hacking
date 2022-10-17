@@ -9,7 +9,7 @@ See [pghdrkit: PostgREST Header Kit](https://github.com/burggraf/pghdrkit)
 ### Interesting Use Cases
 Why is this useful or important?  Imagine these use cases:
 
-- Whitelisting IPs: only allow users to select, insert, update, or delete if they're coming from a pre-defined list of IP addresses.
+- Allow-listing IPs: only allow users to select, insert, update, or delete if they're coming from a pre-defined list of IP addresses.
 - Origin Restrictions: allow a feature only during development (when the request is coming from **localhost** but not your production domain).
 - Platform Checking: only allow users from mobile platforms to use your application (no desktop browsers).
 - Logging: Log the user's IP address and browser User Agent in your database with their anonymous request data.
